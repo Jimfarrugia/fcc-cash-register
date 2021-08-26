@@ -17,8 +17,11 @@
 // Otherwise, return {status: "OPEN", change: [...]}, with the change due in
 // coins and bills, sorted in highest to lowest order, as the value of the change key.
 
+function roundToTwo(num) {
+  return +(Math.round(num + "e+2") + "e-2");
+}
+
 function checkCashRegister(price, cash, cid) {
-  // use an object to store note/coin denominations ("PENNY": 0.01).
   const denominations = {
     PENNY: 0.01,
     NICKEL: 0.05,
@@ -31,15 +34,19 @@ function checkCashRegister(price, cash, cid) {
     "ONE HUNDRED": 100,
   };
   const changeOwed = cash - price;
-  let changeInHand = [];
+  let changeInHand = {
+    value: 0,
+    change: [],
+  };
+  let cashInDrawer = cid; // copy of the array
 
   // loop through cid from highest to lowest denominations.
   for (let i = cid.length - 1; i >= 0; i--) {
     const denomination = {
       name: cid[i][0], // QUARTER
       value: denominations[cid[i][0]], // 0.25
-      valueInDrawer: cid[i][1], // 4.25
-      qtyInDrawer: Math.round(cid[i][1] / denominations[cid[i][0]]), // 17
+      valueInDrawer: cashInDrawer[i][1], // 4.25
+      qtyInDrawer: roundToTwo(cashInDrawer[i][1] / denominations[cid[i][0]]), // 17
     };
 
     // skip this iteration if denomination is greater than changeOwed
@@ -47,20 +54,34 @@ function checkCashRegister(price, cash, cid) {
     if (denomination.value > changeOwed || denomination.qtyInDrawer < 1)
       continue;
 
-    // TODO - add the appropriate amount of the denomination to changeInHand.
+    // calculate how much of the current denomination to transfer
+    let valueToPickup = 0;
+    while (valueToPickup + denomination.value < changeOwed) {
+      valueToPickup = roundToTwo(valueToPickup + denomination.value);
+    }
 
-    // TODO - break out if changeInHand === changeOwed
+    // TODO - remove the appropriate value of the denomination from cashInDrawer. (valueToPickup)
+    // TODO - add the appropriate value of the denomination to changeInHand. (valueToPickup)
+
+    // TODO - break out if changeInHand.value === changeOwed
 
     console.log(denomination);
+    console.log("valueToPickup =", valueToPickup);
   }
 
+  // TODO - Set result.status and result.change based on the contents of cashInDrawer
+  let result = {
+    status: "",
+    change: [],
+  };
+
   // TODO - return an object with the appropriate status and change
-  return changeOwed;
+  return result;
 }
 
 console.log("FIRST CASE");
 console.log(
-  checkCashRegister(19.5, 20, [
+  checkCashRegister(19.45, 20, [
     ["PENNY", 1.01],
     ["NICKEL", 2.05],
     ["DIME", 3.1],
@@ -72,6 +93,7 @@ console.log(
     ["ONE HUNDRED", 100],
   ])
 );
+// Should return => {status: "OPEN", change: [["QUARTER", 0.5]]}
 
 console.log("SECOND CASE");
 console.log(
