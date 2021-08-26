@@ -17,6 +17,12 @@
 // Otherwise, return {status: "OPEN", change: [...]}, with the change due in
 // coins and bills, sorted in highest to lowest order, as the value of the change key.
 
+function flattenArray(ary) {
+  return ary.reduce(
+    (a, b) => a.concat(Array.isArray(b) ? flattenArray(b) : b),
+    []
+  );
+}
 function roundToTwo(num) {
   return +(Math.round(num + "e+2") + "e-2");
 }
@@ -49,6 +55,25 @@ function checkCashRegister(price, cash, cid) {
       ["ONE HUNDRED", 0],
     ],
   };
+
+  // get sum of all of the number values in cid
+  const sumOfAllCashInDrawer = roundToTwo(
+    flattenArray(cid)
+      .filter((el) => typeof el === "number")
+      .reduce((acc, curr) => acc + curr)
+  );
+
+  // if the total value of cid is < changeOwed
+  // then return {status: "INSUFFICIENT_FUNDS", change: []}
+  if (sumOfAllCashInDrawer < changeOwed) {
+    return { status: "INSUFFICIENT_FUNDS", change: [] };
+  }
+
+  // if the total value of cid is === changeOwed
+  // then return {status: "CLOSED", change: cid}
+  if (sumOfAllCashInDrawer === changeOwed) {
+    return { status: "CLOSED", change: cid };
+  }
 
   // loop through cid from highest to lowest denominations.
   for (let i = cid.length - 1; i >= 0; i--) {
@@ -91,20 +116,6 @@ function checkCashRegister(price, cash, cid) {
     if (changeInHand.value === changeOwed) break;
   }
 
-  // TODO
-  // total all of the number values in cid
-
-  // TODO
-  // if the sum of all numbers in cid is < changeOwed
-  // then return {status: "INSUFFICIENT_FUNDS", change: []}
-
-  // TODO
-  // if the sum of all numbers in cid is === changeOwed
-  // then return {status: "CLOSED", change: cid}
-
-  // TODO
-  // ^ move those return statements above the main loop ^
-
   // return {status: "OPEN", change: [...]}, with the change due in
   // coins and bills, sorted in highest to lowest order, as the
   // value of the change key.
@@ -130,7 +141,6 @@ console.log(
     ["ONE HUNDRED", 100],
   ])
 );
-// Should return => {status: "OPEN", change: [["QUARTER", 0.5]]}
 
 console.log("SECOND CASE");
 console.log(
@@ -146,17 +156,3 @@ console.log(
     ["ONE HUNDRED", 0],
   ])
 );
-// Should return => {
-//   status: "CLOSED",
-//   change: [
-//     ["PENNY", 0.5],
-//     ["NICKEL", 0],
-//     ["DIME", 0],
-//     ["QUARTER", 0],
-//     ["ONE", 0],
-//     ["FIVE", 0],
-//     ["TEN", 0],
-//     ["TWENTY", 0],
-//     ["ONE HUNDRED", 0]
-//   ]
-// }
