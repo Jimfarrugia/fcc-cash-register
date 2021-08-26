@@ -91,13 +91,23 @@ function checkCashRegister(price, cash, cid) {
     if (changeInHand.value === changeOwed) break;
   }
 
-  // TODO - Return {status: "INSUFFICIENT_FUNDS", change: []} if cash-in-drawer
-  // TODO   is less than the change due, or if you cannot return the exact change.
-  // TODO - Return {status: "CLOSED", change: [...]} with cash-in-drawer as the
-  // TODO   value for the key change if it is equal to the change due.
+  // TODO
+  // total all of the number values in cid
 
-  // - Otherwise, return {status: "OPEN", change: [...]}, with the change due in
-  // coins and bills, sorted in highest to lowest order, as the value of the change key.
+  // TODO
+  // if the sum of all numbers in cid is < changeOwed
+  // then return {status: "INSUFFICIENT_FUNDS", change: []}
+
+  // TODO
+  // if the sum of all numbers in cid is === changeOwed
+  // then return {status: "CLOSED", change: cid}
+
+  // TODO
+  // ^ move those return statements above the main loop ^
+
+  // return {status: "OPEN", change: [...]}, with the change due in
+  // coins and bills, sorted in highest to lowest order, as the
+  // value of the change key.
   return {
     status: "OPEN",
     change: changeInHand.change
