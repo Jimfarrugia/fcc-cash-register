@@ -127,9 +127,11 @@ function checkCashRegister(price, cash, cid) {
   };
 }
 
-console.log("FIRST CASE");
+// ! test fail #1
+// ! we're attempting to return change in every denomination
+// ? change isn't properly being removed from the drawer
 console.log(
-  checkCashRegister(19.5, 20, [
+  checkCashRegister(3.26, 100, [
     ["PENNY", 1.01],
     ["NICKEL", 2.05],
     ["DIME", 3.1],
@@ -141,18 +143,80 @@ console.log(
     ["ONE HUNDRED", 100],
   ])
 );
+//! => {
+//!   status: "OPEN",
+//!   change: [
+//!     ["TWENTY", 80],
+//!     ["TEN", 90],
+//!     ["FIVE", 95],
+//!     ["ONE", 96],
+//!     ["QUARTER", 96.5],
+//!     ["DIME", 96.7],
+//!     ["NICKEL", 96.7],
+//!     ["PENNY", 96.73],
+//!   ],
+//! };
+// should return {
+//   status: "OPEN",
+//   change: [
+//     ["TWENTY", 60],
+//     ["TEN", 20],
+//     ["FIVE", 15],
+//     ["ONE", 1],
+//     ["QUARTER", 0.5],
+//     ["DIME", 0.2],
+//     ["PENNY", 0.04]
+//   ]
+//  }
 
-console.log("SECOND CASE");
+// ! test fail #2
+// ! there is enough money in the till but not enough change
 console.log(
   checkCashRegister(19.5, 20, [
-    ["PENNY", 0.5],
+    ["PENNY", 0.01],
     ["NICKEL", 0],
     ["DIME", 0],
     ["QUARTER", 0],
-    ["ONE", 0],
+    ["ONE", 1],
     ["FIVE", 0],
     ["TEN", 0],
     ["TWENTY", 0],
     ["ONE HUNDRED", 0],
   ])
 );
+//! => { status: 'OPEN', change: [ [ 'PENNY', 0.5 ] ] }
+//? Pennies are being transferred even after they are supposed to be gone.
+// should return {status: "INSUFFICIENT_FUNDS", change: []}
+
+/*
+ * Simple cases
+ */
+// console.log("FIRST CASE");
+// console.log(
+//   checkCashRegister(19.5, 20, [
+//     ["PENNY", 1.01],
+//     ["NICKEL", 2.05],
+//     ["DIME", 3.1],
+//     ["QUARTER", 4.25],
+//     ["ONE", 90],
+//     ["FIVE", 55],
+//     ["TEN", 20],
+//     ["TWENTY", 60],
+//     ["ONE HUNDRED", 100],
+//   ])
+// );
+
+// console.log("SECOND CASE");
+// console.log(
+//   checkCashRegister(19.5, 20, [
+//     ["PENNY", 0.5],
+//     ["NICKEL", 0],
+//     ["DIME", 0],
+//     ["QUARTER", 0],
+//     ["ONE", 0],
+//     ["FIVE", 0],
+//     ["TEN", 0],
+//     ["TWENTY", 0],
+//     ["ONE HUNDRED", 0],
+//   ])
+// );
