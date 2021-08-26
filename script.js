@@ -34,11 +34,21 @@ function checkCashRegister(price, cash, cid) {
     "ONE HUNDRED": 100,
   };
   const changeOwed = cash - price;
+  let cashInDrawer = [...cid]; // copy of the array
   let changeInHand = {
     value: 0,
-    change: [],
+    change: [
+      ["PENNY", 0],
+      ["NICKEL", 0],
+      ["DIME", 0],
+      ["QUARTER", 0],
+      ["ONE", 0],
+      ["FIVE", 0],
+      ["TEN", 0],
+      ["TWENTY", 0],
+      ["ONE HUNDRED", 0],
+    ],
   };
-  let cashInDrawer = cid; // copy of the array
 
   // loop through cid from highest to lowest denominations.
   for (let i = cid.length - 1; i >= 0; i--) {
@@ -60,13 +70,22 @@ function checkCashRegister(price, cash, cid) {
       valueToPickup = roundToTwo(valueToPickup + denomination.value);
     }
 
-    // TODO - remove the appropriate value of the denomination from cashInDrawer. (valueToPickup)
-    // TODO - add the appropriate value of the denomination to changeInHand. (valueToPickup)
+    // subtract valueToPickup from current denomination in cashInDrawer
+    cashInDrawer[i][1] = roundToTwo(cashInDrawer[i][1] - valueToPickup);
 
-    // TODO - break out if changeInHand.value === changeOwed
+    // add valueToPickup to cashInHand
+    changeInHand.change[i][1] = roundToTwo(
+      changeInHand.change[i][1] + valueToPickup
+    );
+    changeInHand.value += valueToPickup;
 
     console.log(denomination);
     console.log("valueToPickup =", valueToPickup);
+    console.log("cashInDrawer[i] = ", cashInDrawer[i]);
+    console.log("changeInHand = ", changeInHand);
+    console.log("------");
+
+    // TODO - break out if changeInHand.value === changeOwed
   }
 
   // TODO - Set result.status and result.change based on the contents of cashInDrawer
@@ -81,7 +100,7 @@ function checkCashRegister(price, cash, cid) {
 
 console.log("FIRST CASE");
 console.log(
-  checkCashRegister(19.45, 20, [
+  checkCashRegister(19.5, 20, [
     ["PENNY", 1.01],
     ["NICKEL", 2.05],
     ["DIME", 3.1],
