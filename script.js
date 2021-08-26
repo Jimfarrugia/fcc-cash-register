@@ -39,7 +39,7 @@ function checkCashRegister(price, cash, cid) {
       name: cid[i][0], // QUARTER
       value: denominations[cid[i][0]], // 0.25
       valueInDrawer: cid[i][1], // 4.25
-      qtyInDrawer: cid[i][1] / denominations[cid[i][0]], // 17
+      qtyInDrawer: Math.round(cid[i][1] / denominations[cid[i][0]]), // 17
     };
 
     // skip this iteration if denomination is greater than changeOwed
