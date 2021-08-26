@@ -80,25 +80,30 @@ function checkCashRegister(price, cash, cid) {
     changeInHand.value += valueToPickup;
 
     // Debugging
-    console.log("changeOwed = ", changeOwed);
-    console.log(denomination);
-    console.log("valueToPickup =", valueToPickup);
-    console.log("cashInDrawer[i] = ", cashInDrawer[i]);
-    console.log("changeInHand = ", changeInHand);
-    console.log("------");
+    // console.log("changeOwed = ", changeOwed);
+    // console.log(denomination);
+    // console.log("valueToPickup =", valueToPickup);
+    // console.log("cashInDrawer[i] = ", cashInDrawer[i]);
+    // console.log("changeInHand = ", changeInHand);
+    // console.log("------");
 
     // break out if changeInHand.value === changeOwed
     if (changeInHand.value === changeOwed) break;
   }
 
-  // TODO - Set result.status and result.change based on the contents of cashInDrawer
-  let result = {
-    status: "",
-    change: [],
-  };
+  // TODO - Return {status: "INSUFFICIENT_FUNDS", change: []} if cash-in-drawer
+  // TODO   is less than the change due, or if you cannot return the exact change.
+  // TODO - Return {status: "CLOSED", change: [...]} with cash-in-drawer as the
+  // TODO   value for the key change if it is equal to the change due.
 
-  // TODO - return an object with the appropriate status and change
-  return result;
+  // - Otherwise, return {status: "OPEN", change: [...]}, with the change due in
+  // coins and bills, sorted in highest to lowest order, as the value of the change key.
+  return {
+    status: "OPEN",
+    change: changeInHand.change
+      .reverse()
+      .filter((denomination) => denomination[1] !== 0),
+  };
 }
 
 console.log("FIRST CASE");
@@ -131,3 +136,17 @@ console.log(
     ["ONE HUNDRED", 0],
   ])
 );
+// Should return => {
+//   status: "CLOSED",
+//   change: [
+//     ["PENNY", 0.5],
+//     ["NICKEL", 0],
+//     ["DIME", 0],
+//     ["QUARTER", 0],
+//     ["ONE", 0],
+//     ["FIVE", 0],
+//     ["TEN", 0],
+//     ["TWENTY", 0],
+//     ["ONE HUNDRED", 0]
+//   ]
+// }
