@@ -24,7 +24,7 @@ function checkCashRegister(price, cash, cid) {
     NICKEL: 0.05,
     DIME: 0.1,
     QUARTER: 0.25,
-    DOLLAR: 1,
+    ONE: 1,
     FIVE: 5,
     TEN: 10,
     TWENTY: 20,
