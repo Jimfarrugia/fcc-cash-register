@@ -38,15 +38,31 @@ function checkCashRegister(price, cash, cid) {
 
   // loop through cid from highest to lowest denominations.
   for (let i = cid.length - 1; i >= 0; i--) {
-    console.log(i);
-    // TODO - if a denomination is <= change owed and is available (> 0) within cid,
-    // TODO   then remove one of that denomination from cid and add it to changeInHand.
+    // console.log(i);
+
+    const denomination = {
+      name: cid[i][0],
+      value: denominations[cid[i][0]],
+      valueInDrawer: cid[i][1],
+      qtyInDrawer: cid[i][1] / denominations[cid[i][0]],
+    };
+
+    // skip this iteration if denomination is greater than changeOwed
+    if (denomination.value > changeOwed) continue;
+
+    // TODO - if a denomination is available (> 0) within cid,
+    // TODO   then add the appropriate amount of it to changeInHand.
+
+    // TODO - break out if changeInHand === changeOwed
+
+    console.log(denomination);
   }
 
   // TODO - return an object with the appropriate status and change
   return changeOwed;
 }
 
+console.log("FIRST CASE");
 console.log(
   checkCashRegister(19.5, 20, [
     ["PENNY", 1.01],
@@ -58,5 +74,20 @@ console.log(
     ["TEN", 20],
     ["TWENTY", 60],
     ["ONE HUNDRED", 100],
+  ])
+);
+
+console.log("SECOND CASE");
+console.log(
+  checkCashRegister(19.5, 20, [
+    ["PENNY", 0.5],
+    ["NICKEL", 0],
+    ["DIME", 0],
+    ["QUARTER", 0],
+    ["ONE", 0],
+    ["FIVE", 0],
+    ["TEN", 0],
+    ["TWENTY", 0],
+    ["ONE HUNDRED", 0],
   ])
 );
