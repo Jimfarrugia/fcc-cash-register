@@ -79,13 +79,16 @@ function checkCashRegister(price, cash, cid) {
     );
     changeInHand.value += valueToPickup;
 
+    // Debugging
+    console.log("changeOwed = ", changeOwed);
     console.log(denomination);
     console.log("valueToPickup =", valueToPickup);
     console.log("cashInDrawer[i] = ", cashInDrawer[i]);
     console.log("changeInHand = ", changeInHand);
     console.log("------");
 
-    // TODO - break out if changeInHand.value === changeOwed
+    // break out if changeInHand.value === changeOwed
+    if (changeInHand.value === changeOwed) break;
   }
 
   // TODO - Set result.status and result.change based on the contents of cashInDrawer
