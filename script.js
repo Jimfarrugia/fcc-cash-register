@@ -30,28 +30,24 @@ function checkCashRegister(price, cash, cid) {
     TWENTY: 20,
     "ONE HUNDRED": 100,
   };
-
-  // subtract price from cash to find change owed.
   const changeOwed = cash - price;
-
   let changeInHand = [];
 
   // loop through cid from highest to lowest denominations.
   for (let i = cid.length - 1; i >= 0; i--) {
-    // console.log(i);
-
     const denomination = {
-      name: cid[i][0],
-      value: denominations[cid[i][0]],
-      valueInDrawer: cid[i][1],
-      qtyInDrawer: cid[i][1] / denominations[cid[i][0]],
+      name: cid[i][0], // QUARTER
+      value: denominations[cid[i][0]], // 0.25
+      valueInDrawer: cid[i][1], // 4.25
+      qtyInDrawer: cid[i][1] / denominations[cid[i][0]], // 17
     };
 
     // skip this iteration if denomination is greater than changeOwed
-    if (denomination.value > changeOwed) continue;
+    // skip this iteration if denomination is not available in the drawer
+    if (denomination.value > changeOwed || denomination.qtyInDrawer < 1)
+      continue;
 
-    // TODO - if a denomination is available (> 0) within cid,
-    // TODO   then add the appropriate amount of it to changeInHand.
+    // TODO - add the appropriate amount of the denomination to changeInHand.
 
     // TODO - break out if changeInHand === changeOwed
 
