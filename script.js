@@ -90,11 +90,9 @@ function checkCashRegister(price, cash, cid) {
       continue;
 
     // calculate how much of the current denomination to transfer
-    //! This is not taking into account the amount that we have in our hand.
-    //! valueToPickup should not be greater than changeOwed - changeInHand
     let valueToPickup = 0;
     while (
-      valueToPickup + denomination.value <= changeOwed &&
+      valueToPickup + denomination.value + changeInHand.value <= changeOwed &&
       valueToPickup < changeInDrawer[i][1]
     ) {
       valueToPickup = roundToTwo(valueToPickup + denomination.value);
@@ -143,9 +141,7 @@ function checkCashRegister(price, cash, cid) {
 }
 
 // ! test fail #1
-// ! we're attempting to return full change in each denomination
-// we should not be adding more change to the hand if
-// changeInHand.value + denomination.value > changeOwed
+// ! we're missing a penny
 console.log(
   checkCashRegister(3.26, 100, [
     ["PENNY", 1.01],
@@ -159,61 +155,3 @@ console.log(
     ["ONE HUNDRED", 100],
   ])
 );
-//! => {
-//!   status: "OPEN",
-//!   change: [
-//!     ["TWENTY", 60],
-//!     ["TEN", 20],
-//!     ["FIVE", 55],
-//!     ["ONE", 90],
-//!     ["QUARTER", 4.25],
-//!     ["DIME", 3.1],
-//!     ["NICKEL", 2.05],
-//!     ["PENNY", 1.01],
-//!   ],
-//! };
-// should return {
-//   status: "OPEN",
-//   change: [
-//     ["TWENTY", 60],
-//     ["TEN", 20],
-//     ["FIVE", 15],
-//     ["ONE", 1],
-//     ["QUARTER", 0.5],
-//     ["DIME", 0.2],
-//     ["PENNY", 0.04]
-//   ]
-//  }
-
-/*
- * Simple cases
- */
-// console.log("FIRST CASE");
-// console.log(
-//   checkCashRegister(19.5, 20, [
-//     ["PENNY", 1.01],
-//     ["NICKEL", 2.05],
-//     ["DIME", 3.1],
-//     ["QUARTER", 4.25],
-//     ["ONE", 90],
-//     ["FIVE", 55],
-//     ["TEN", 20],
-//     ["TWENTY", 60],
-//     ["ONE HUNDRED", 100],
-//   ])
-// );
-
-// console.log("SECOND CASE");
-// console.log(
-//   checkCashRegister(19.5, 20, [
-//     ["PENNY", 0.5],
-//     ["NICKEL", 0],
-//     ["DIME", 0],
-//     ["QUARTER", 0],
-//     ["ONE", 0],
-//     ["FIVE", 0],
-//     ["TEN", 0],
-//     ["TWENTY", 0],
-//     ["ONE HUNDRED", 0],
-//   ])
-// );
