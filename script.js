@@ -40,7 +40,7 @@ function checkCashRegister(price, cash, cid) {
     "ONE HUNDRED": 100,
   };
   const changeOwed = cash - price;
-  let cashInDrawer = [...cid]; // copy of the array
+  let changeInDrawer = [...cid]; // copy of the array
   let changeInHand = {
     value: 0,
     change: [
@@ -57,7 +57,7 @@ function checkCashRegister(price, cash, cid) {
   };
 
   // get sum of all of the number values in cid
-  const sumOfAllCashInDrawer = roundToTwo(
+  const sumOfAllchangeInDrawer = roundToTwo(
     flattenArray(cid)
       .filter((el) => typeof el === "number")
       .reduce((acc, curr) => acc + curr)
@@ -65,13 +65,13 @@ function checkCashRegister(price, cash, cid) {
 
   // if the total value of cid is < changeOwed
   // then return {status: "INSUFFICIENT_FUNDS", change: []}
-  if (sumOfAllCashInDrawer < changeOwed) {
+  if (sumOfAllchangeInDrawer < changeOwed) {
     return { status: "INSUFFICIENT_FUNDS", change: [] };
   }
 
   // if the total value of cid is === changeOwed
   // then return {status: "CLOSED", change: cid}
-  if (sumOfAllCashInDrawer === changeOwed) {
+  if (sumOfAllchangeInDrawer === changeOwed) {
     return { status: "CLOSED", change: cid };
   }
 
@@ -80,8 +80,8 @@ function checkCashRegister(price, cash, cid) {
     const denomination = {
       name: cid[i][0], // QUARTER
       value: denominations[cid[i][0]], // 0.25
-      valueInDrawer: cashInDrawer[i][1], // 4.25
-      qtyInDrawer: roundToTwo(cashInDrawer[i][1] / denominations[cid[i][0]]), // 17
+      valueInDrawer: changeInDrawer[i][1], // 4.25
+      qtyInDrawer: roundToTwo(changeInDrawer[i][1] / denominations[cid[i][0]]), // 17
     };
 
     // skip this iteration if denomination is greater than changeOwed
@@ -90,34 +90,39 @@ function checkCashRegister(price, cash, cid) {
       continue;
 
     // calculate how much of the current denomination to transfer
+    //! This is not taking into account the amount that we have in our hand.
+    //! valueToPickup should not be greater than changeOwed - changeInHand
     let valueToPickup = 0;
     while (
       valueToPickup + denomination.value <= changeOwed &&
-      //? AND valueToPickup <= cashInDrawer
-      valueToPickup < cashInDrawer[i][1] // ? should it be <= ?
+      valueToPickup < changeInDrawer[i][1]
     ) {
       valueToPickup = roundToTwo(valueToPickup + denomination.value);
     }
 
-    // subtract valueToPickup from current denomination in cashInDrawer
-    cashInDrawer[i][1] = roundToTwo(cashInDrawer[i][1] - valueToPickup);
+    //? DEBUG
+    console.log(`Checking ${denomination.name}...`);
+    console.log(`changeInHand before = ${changeInHand.value}...`);
+    console.log(`valueToPickup = ${valueToPickup}`);
+    console.log(`valueInDrawer = ${denomination.valueInDrawer}`);
 
-    // add valueToPickup to cashInHand
-    changeInHand.change[i][1] = roundToTwo(
-      changeInHand.change[i][1] + valueToPickup
-    );
-    changeInHand.value += valueToPickup;
+    // if the value of changeInHand will not exceed changeOwed
+    // then complete the transfer from drawer to hand
+    if (changeInHand.value + valueToPickup <= changeOwed) {
+      // subtract valueToPickup from current denomination in changeInDrawer
+      changeInDrawer[i][1] = roundToTwo(changeInDrawer[i][1] - valueToPickup);
 
-    // Debugging
-    // console.log("changeOwed = ", changeOwed);
-    // console.log(denomination);
-    // console.log("valueToPickup =", valueToPickup);
-    // console.log("cashInDrawer[i] = ", cashInDrawer[i]);
-    // console.log("changeInHand = ", changeInHand);
-    // console.log("------");
-
+      // add valueToPickup to changeInHand
+      changeInHand.change[i][1] = roundToTwo(
+        changeInHand.change[i][1] + valueToPickup
+      );
+      changeInHand.value = roundToTwo(changeInHand.value + valueToPickup);
+    }
     // break out if changeInHand.value === changeOwed
     if (changeInHand.value === changeOwed) break;
+
+    //? DEBUG
+    console.log(`changeInHand after = ${changeInHand.value}...`);
   }
 
   // If the total value of changeInHand is < changeOwed
@@ -138,8 +143,9 @@ function checkCashRegister(price, cash, cid) {
 }
 
 // ! test fail #1
-// ! we're attempting to return change in every denomination
-// ? change isn't properly being removed from the drawer
+// ! we're attempting to return full change in each denomination
+// we should not be adding more change to the hand if
+// changeInHand.value + denomination.value > changeOwed
 console.log(
   checkCashRegister(3.26, 100, [
     ["PENNY", 1.01],
@@ -156,14 +162,14 @@ console.log(
 //! => {
 //!   status: "OPEN",
 //!   change: [
-//!     ["TWENTY", 80],
-//!     ["TEN", 90],
-//!     ["FIVE", 95],
-//!     ["ONE", 96],
-//!     ["QUARTER", 96.5],
-//!     ["DIME", 96.7],
-//!     ["NICKEL", 96.7],
-//!     ["PENNY", 96.73],
+//!     ["TWENTY", 60],
+//!     ["TEN", 20],
+//!     ["FIVE", 55],
+//!     ["ONE", 90],
+//!     ["QUARTER", 4.25],
+//!     ["DIME", 3.1],
+//!     ["NICKEL", 2.05],
+//!     ["PENNY", 1.01],
 //!   ],
 //! };
 // should return {
