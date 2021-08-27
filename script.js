@@ -90,23 +90,19 @@ function checkCashRegister(price, cash, cid) {
       continue;
 
     // calculate how much of the current denomination to transfer
+    // from drawer to hand
     let valueToPickup = 0;
     while (
-      valueToPickup + denomination.value + changeInHand.value <= changeOwed &&
+      roundToTwo(valueToPickup + denomination.value + changeInHand.value) <=
+        changeOwed &&
       valueToPickup < changeInDrawer[i][1]
     ) {
       valueToPickup = roundToTwo(valueToPickup + denomination.value);
     }
 
-    //? DEBUG
-    console.log(`Checking ${denomination.name}...`);
-    console.log(`changeInHand before = ${changeInHand.value}...`);
-    console.log(`valueToPickup = ${valueToPickup}`);
-    console.log(`valueInDrawer = ${denomination.valueInDrawer}`);
-
     // if the value of changeInHand will not exceed changeOwed
     // then complete the transfer from drawer to hand
-    if (changeInHand.value + valueToPickup <= changeOwed) {
+    if (roundToTwo(changeInHand.value + valueToPickup) <= changeOwed) {
       // subtract valueToPickup from current denomination in changeInDrawer
       changeInDrawer[i][1] = roundToTwo(changeInDrawer[i][1] - valueToPickup);
 
@@ -118,9 +114,6 @@ function checkCashRegister(price, cash, cid) {
     }
     // break out if changeInHand.value === changeOwed
     if (changeInHand.value === changeOwed) break;
-
-    //? DEBUG
-    console.log(`changeInHand after = ${changeInHand.value}...`);
   }
 
   // If the total value of changeInHand is < changeOwed
@@ -140,8 +133,6 @@ function checkCashRegister(price, cash, cid) {
   };
 }
 
-// ! test fail #1
-// ! we're missing a penny
 console.log(
   checkCashRegister(3.26, 100, [
     ["PENNY", 1.01],
