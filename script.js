@@ -91,7 +91,11 @@ function checkCashRegister(price, cash, cid) {
 
     // calculate how much of the current denomination to transfer
     let valueToPickup = 0;
-    while (valueToPickup + denomination.value <= changeOwed) {
+    while (
+      valueToPickup + denomination.value <= changeOwed &&
+      //? AND valueToPickup <= cashInDrawer
+      valueToPickup < cashInDrawer[i][1] // ? should it be <= ?
+    ) {
       valueToPickup = roundToTwo(valueToPickup + denomination.value);
     }
 
