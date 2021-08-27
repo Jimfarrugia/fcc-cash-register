@@ -120,6 +120,12 @@ function checkCashRegister(price, cash, cid) {
     if (changeInHand.value === changeOwed) break;
   }
 
+  // If the total value of changeInHand is < changeOwed
+  // then return {status: "INSUFFICIENT_FUNDS", change: []}
+  if (changeInHand.value < changeOwed) {
+    return { status: "INSUFFICIENT_FUNDS", change: [] };
+  }
+
   // return {status: "OPEN", change: [...]}, with the change due in
   // coins and bills, sorted in highest to lowest order, as the
   // value of the change key.
@@ -172,25 +178,6 @@ console.log(
 //     ["PENNY", 0.04]
 //   ]
 //  }
-
-// ! test fail #2
-// ! there is enough money in the till but not enough change
-console.log(
-  checkCashRegister(19.5, 20, [
-    ["PENNY", 0.01],
-    ["NICKEL", 0],
-    ["DIME", 0],
-    ["QUARTER", 0],
-    ["ONE", 1],
-    ["FIVE", 0],
-    ["TEN", 0],
-    ["TWENTY", 0],
-    ["ONE HUNDRED", 0],
-  ])
-);
-//! => { status: 'OPEN', change: [ [ 'PENNY', 0.5 ] ] }
-//? Pennies are being transferred even after they are supposed to be gone.
-// should return {status: "INSUFFICIENT_FUNDS", change: []}
 
 /*
  * Simple cases
